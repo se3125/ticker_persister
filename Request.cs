@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace ticker
 {
-public class Request
+    public class Request 
     {
         public string jsonrpc { get; set; }
         public string method { get; set; }

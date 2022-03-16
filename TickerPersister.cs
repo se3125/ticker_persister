@@ -24,7 +24,8 @@ namespace ticker
     
         static void Main(string[] args)
         {
-            if (args.Length != 3) {
+            if (args.Length != 3) 
+            {
                 Console.WriteLine("Symbol and duration must be specified as command-line arguments");
                 return;
             }
@@ -47,13 +48,16 @@ namespace ticker
             EXIT_EVENT.WaitOne();
         }
 
-        private static void createTableIfNecessary(SQLiteConnection connection) {
+        private static void createTableIfNecessary(SQLiteConnection connection) 
+        {
             var createTableCmd = new SQLiteCommand(CREATE_TABLE_COMMAND, connection);
             createTableCmd.ExecuteNonQuery();
         }
 
-        private static void processMessage(ResponseMessage aMessage, SQLiteConnection aConnection) {
-            try {
+        private static void processMessage(ResponseMessage message, SQLiteConnection connection) 
+        {
+            try 
+            {
                 // In the current setup, the tickerData object isn't actually used since we persist the json directly.
                 // The reason for still parsing it is to ensure that we only persist the json for valid TickerData 
                 // objects, not e.g. error messages from the server.
@@ -61,12 +65,13 @@ namespace ticker
                 // The overall setup (persisting only the json of the message as opposed to a more detailed database with more columns)
                 // was chosen mainly due to time constraints; in an ideal version of this I would expect to specify more columns in the database
                 // for the fields of TickerData, and potentially only persist certain fields depending on the use case
-                TickerData tickerData = JsonConvert.DeserializeObject<TickerData>(aMessage.Text, JSON_SETTINGS);
+                TickerData tickerData = JsonConvert.DeserializeObject<TickerData>(message.Text, JSON_SETTINGS);
 
-                var insertCommand = new SQLiteCommand(String.Format(INSERT_DATA_COMMAND, aMessage.Text), aConnection);
+                var insertCommand = new SQLiteCommand(String.Format(INSERT_DATA_COMMAND, message.Text), connection);
                 insertCommand.ExecuteNonQuery();
-            } catch (JsonException aException) {
-                Console.WriteLine("Failed to process message: " + aMessage.Text + " Exception: " + aException.Message);
+            } catch (JsonException exception) 
+            {
+                Console.WriteLine("Failed to process message: " + message.Text + " Exception: " + exception.Message);
             }
         }
      }
